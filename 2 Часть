@@ -1,54 +1,30 @@
-#Для усложнения задачи, я добавил ограничение на сумму элементов в каждой строке и столбце.
-# Кроме того, целевой функцией стала максимизация суммы элементов на главной диагонали.
-from itertools import permutations
+#выводился результат когда в правой верхней подматрице сумма была меньше 25, 
+при этом выводилась лучшая матрица ,в которой произведение на главной диагонали наибольшее,вывести чему равно произведение
 
-def generate_all_matrices(matrix):
-    all_matrices = []
-    for p in permutations(range(4)):
-        temp_matrix = [
-            matrix[p[0]][p[0]:p[0]+4],
-            matrix[p[1]][p[1]:p[1]+4],
-            matrix[p[2]][p[2]:p[2]+4],
-            matrix[p[3]][p[3]:p[3]+4]
-        ]
-        all_matrices.append(temp_matrix)
-    return all_matrices
 
-def check_constraints(matrix):
-    for i in range(4):
-        if sum(matrix[i]) != 34 or sum(matrix[j][i] for j in range(4)) != 34:
-            return False
-    return True
-def optimize_diagonal(matrix):
-    diagonal_sum = sum(matrix[i][i] for i in range(4))
-    return diagonal_sum
-def find_best_matrix(matrix):
-    all_matrices = generate_all_matrices(matrix)
-    best_matrix = None
-    best_diagonal_sum = -1
-    for m in all_matrices:
-        if check_constraints(m):
-            diagonal_sum = optimize_diagonal(m)
-            if diagonal_sum > best_diagonal_sum:
-                best_diagonal_sum = diagonal_sum
-                best_matrix = m
-    return best_matrix
+import itertools
+import numpy as np
 
-def main():
-    matrix = [
-        [2, 7, 6, 19],
-        [9, 5, 1, 19],
-        [4, 3, 14, 13],
-        [15, 10, 11, 8]
-    ]
-    all_matrices = generate_all_matrices(matrix)
-    for i, mat in enumerate(all_matrices):
-        print(f"Матрица {i+1}:")
-        for row in mat:
-            print(row)
-        print()
+matrix = np.array([[1, 2, 3, 4],
+                    [5, 6, 7, 8],
+                    [9, 10, 11, 12],
+                    [13, 14, 15, 16]])
 
-if __name__ == '__main__':
-    main()
-best_matrix = find_best_matrix(matrix)
-print(best_matrix)
+sub_n, sub_m = matrix.shape[0] // 2, matrix.shape[1] // 2
+sub_matrices = [matrix[i*sub_n:(i+1)*sub_n, j*sub_m:(j+1)*sub_m] for i in range(2) for j in range(2)]
+
+max_product = 0
+max_matrix = None
+
+for i, c in enumerate(itertools.permutations(sub_matrices)):
+    new_matrix = np.block([[c[0], c[1]], [c[2], c[3]]])
+    upper_right_sum = np.sum(new_matrix[:sub_n, sub_m:])
+    if upper_right_sum < 25:
+        diagonal_product = np.prod(np.diagonal(new_matrix))
+        if diagonal_product > max_product:
+            max_product = diagonal_product
+            max_matrix = new_matrix
+
+print("Матрица с максимальным произведением на главной диагонали:")
+print(max_matrix)
+print("Произведение на главной диагонали:", max_product)
