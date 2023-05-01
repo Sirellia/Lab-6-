@@ -1,24 +1,23 @@
 #Дана квадратная матрица, состоящая из четырех равных по размерам подматриц. Сформировать все возможные варианты данной матрицы путем перестановки данных подматриц.
 from itertools import permutations
 
-# исходная матрица
 import itertools
 import numpy as np
 
-# Создаем исходную матрицу
+
 matrix = np.array([[1, 2, 3, 4],
                    [5, 6, 7, 8],
                    [9, 10, 11, 12],
                    [13, 14, 15, 16]])
 
-# Определяем размеры подматриц
+
 sub_n, sub_m = matrix.shape[0] // 2, matrix.shape[1] // 2
 
-# Получаем все возможные комбинации из 4 подматриц
 sub_matrices = [matrix[i*sub_n:(i+1)*sub_n, j*sub_m:(j+1)*sub_m] for i in range(2) for j in range(2)]
 combinations = list(itertools.permutations(sub_matrices))
 
-# Выводим все возможные комбинации матриц
-for c in combinations:
+for i, c in enumerate(combinations):
     new_matrix = np.block([[c[0], c[1]], [c[2], c[3]]])
+    print("Матрица №{}:".format(i+1))
     print(new_matrix)
+    print("")
