@@ -1,23 +1,38 @@
 #Дана квадратная матрица, состоящая из четырех равных по размерам подматриц. Сформировать все возможные варианты данной матрицы путем перестановки данных подматриц.
-from itertools import permutations
 
-import itertools
-import numpy as np
+matrix = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 16]
+]
 
+sub_matrices = []
+n = len(matrix) // 2
 
-matrix = np.array([[1, 2, 3, 4],
-                   [5, 6, 7, 8],
-                   [9, 10, 11, 12],
-                   [13, 14, 15, 16]])
+for i in range(2):
+    for j in range(2):
+        sub_matrices.append([row[j*n:(j+1)*n] for row in matrix[i*n:(i+1)*n]])
 
-
-sub_n, sub_m = matrix.shape[0] // 2, matrix.shape[1] // 2
-
-sub_matrices = [matrix[i*sub_n:(i+1)*sub_n, j*sub_m:(j+1)*sub_m] for i in range(2) for j in range(2)]
-combinations = list(itertools.permutations(sub_matrices))
+combinations = []
+for i in range(4):
+    for j in range(4):
+        if j == i:
+            continue
+        for k in range(4):
+            if k == i or k == j:
+                continue
+            l = 6 - i - j - k
+            combinations.append([sub_matrices[i], sub_matrices[j], sub_matrices[k], sub_matrices[l]])
 
 for i, c in enumerate(combinations):
-    new_matrix = np.block([[c[0], c[1]], [c[2], c[3]]])
-    print("Матрица №{}:".format(i+1))
-    print(new_matrix)
-    print("")
+    new_matrix = []
+    for j in range(n*2):
+        if j < n:
+            new_matrix.append(c[0][j] + c[1][j])
+        else:
+            new_matrix.append(c[2][j-n] + c[3][j-n])
+    print(f"Матрица №{i+1}:")
+    for row in new_matrix:
+        print(row)
+    print()
