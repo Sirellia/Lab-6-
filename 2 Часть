@@ -6,25 +6,26 @@ import itertools
 import numpy as np
 
 matrix = np.array([[1, 2, 3, 4],
-                    [5, 6, 7, 8],
-                    [9, 10, 11, 12],
-                    [13, 14, 15, 16]])
+                   [5, 6, 7, 8],
+                   [9, 10, 11, 12],
+                   [13, 14, 15, 16]])
 
 sub_n, sub_m = matrix.shape[0] // 2, matrix.shape[1] // 2
 sub_matrices = [matrix[i*sub_n:(i+1)*sub_n, j*sub_m:(j+1)*sub_m] for i in range(2) for j in range(2)]
-
-max_product = 0
-max_matrix = None
+best_product = 0
+best_matrix = None
 
 for i, c in enumerate(itertools.permutations(sub_matrices)):
     new_matrix = np.block([[c[0], c[1]], [c[2], c[3]]])
-    upper_right_sum = np.sum(new_matrix[:sub_n, sub_m:])
-    if upper_right_sum < 25:
-        diagonal_product = np.prod(np.diagonal(new_matrix))
-        if diagonal_product > max_product:
-            max_product = diagonal_product
-            max_matrix = new_matrix
+    if new_matrix[0:sub_n, sub_m:2*sub_m].sum() < 25:
+        product = np.prod(np.diagonal(new_matrix))
+        if product > best_product:
+            best_product = product
+            best_matrix = new_matrix
 
-print("Матрица с максимальным произведением на главной диагонали:")
-print(max_matrix)
-print("Произведение на главной диагонали:", max_product)
+if best_matrix is not None:
+    print("Лучшая матрица:")
+    print(best_matrix)
+    print("Произведение на главной диагонали:", best_product)
+else:
+    print("Нет матриц, удовлетворяющих условию.")
