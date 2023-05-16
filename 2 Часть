@@ -2,30 +2,56 @@
 при этом выводилась лучшая матрица ,в которой произведение на главной диагонали наибольшее,вывести чему равно произведение
 
 
-import itertools
 import numpy as np
+matrix = [
+    [1, 2],
+    [3, 4]
+]
 
-matrix = np.array([[1, 2, 3, 4],
-                   [5, 6, 7, 8],
-                   [9, 10, 11, 12],
-                   [13, 14, 15, 16]])
+sub_matrices = []
+n = len(matrix) // 2
 
-sub_n, sub_m = matrix.shape[0] // 2, matrix.shape[1] // 2
-sub_matrices = [matrix[i*sub_n:(i+1)*sub_n, j*sub_m:(j+1)*sub_m] for i in range(2) for j in range(2)]
-best_product = 0
-best_matrix = None
+for i in range(2):
+    for j in range(2):
+        sub_matrices.append([row[j * n:(j + 1) * n] for row in matrix[i * n:(i + 1) * n]])
 
-for i, c in enumerate(itertools.permutations(sub_matrices)):
-    new_matrix = np.block([[c[0], c[1]], [c[2], c[3]]])
-    if new_matrix[0:sub_n, sub_m:2*sub_m].sum() < 25:
-        product = np.prod(np.diagonal(new_matrix))
-        if product > best_product:
-            best_product = product
-            best_matrix = new_matrix
+combinations = []
+for i in range(4):
+    for j in range(4):
+        if j == i:
+            continue
+        for k in range(4):
+            if k == i or k == j:
+                continue
+            l = 6 - i - j - k
+            combinations.append([sub_matrices[i], sub_matrices[j], sub_matrices[k], sub_matrices[l]])
 
-if best_matrix is not None:
-    print("Лучшая матрица:")
-    print(best_matrix)
-    print("Произведение на главной диагонали:", best_product)
-else:
-    print("Нет матриц, удовлетворяющих условию.")
+
+# Условие: Произведение элементов на главной диагонали должно быть максимальным
+def objective_function(matrix):
+    diagonal_elements = [matrix[i][i] for i in range(len(matrix))]
+    return np.prod(diagonal_elements)
+
+
+best_combination = None
+best_score = float('-inf')
+
+for c in combinations:
+    new_matrix = []
+    for j in range(n * 2):
+        if j < n:
+            new_matrix.append(c[0][j] + c[1][j])
+        else:
+            new_matrix.append(c[2][j - n] + c[3][j - n])
+
+    score = objective_function(new_matrix)
+
+    if score > best_score:
+        best_score = score
+        best_combination = new_matrix
+
+print("Лучшая комбинация матриц:")
+for row in best_combination:
+    print(row)
+print("Произведение элементов на главной диагонали:", best_score)
+
