@@ -1,5 +1,5 @@
 #выводился результат когда в правой верхней подматрице сумма была меньше 25, 
-при этом выводилась лучшая матрица ,в которой произведение на главной диагонали наибольшее,вывести чему равно произведение
+#при этом выводилась лучшая матрица ,в которой произведение на главной диагонали наибольшее,вывести чему равно произведение
 
 
 import numpy as np
@@ -26,8 +26,6 @@ for i in range(4):
             l = 6 - i - j - k
             combinations.append([sub_matrices[i], sub_matrices[j], sub_matrices[k], sub_matrices[l]])
 
-
-# Условие: Произведение элементов на главной диагонали должно быть максимальным
 def objective_function(matrix):
     diagonal_elements = [matrix[i][i] for i in range(len(matrix))]
     return np.prod(diagonal_elements)
