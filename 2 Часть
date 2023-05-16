@@ -1,12 +1,12 @@
-#выводился результат когда в правой верхней подматрице сумма была меньше 25, 
-#при этом выводилась лучшая матрица ,в которой произведение на главной диагонали наибольшее,вывести чему равно произведение
-
+#Сумма в правом верхней подматрице должна быть наибольшая и диагональ наибольшая
 
 import numpy as np
 
 matrix = [
-    [1, 2],
-    [3, 4]
+    [1, 2,3,4],
+    [5,6,7,8],
+    [9,10,11,12],
+    [13,14,15,16]
 ]
 
 sub_matrices = []
@@ -34,7 +34,9 @@ def objective_function(matrix):
 
 
 def upper_right_sum(matrix):
-    return np.sum(matrix[0][n:])  # Сумма элементов в правом верхнем квадранте
+    rows, cols = matrix.shape
+    upper_right = matrix[:rows//2, cols//2:]
+    return np.sum(upper_right)
 
 
 best_combination = None
@@ -48,7 +50,7 @@ for c in combinations:
         else:
             new_matrix.append(c[2][j - n] + c[3][j - n])
 
-    score = objective_function(new_matrix) + upper_right_sum(new_matrix)
+    score = objective_function(new_matrix) + upper_right_sum(np.array(new_matrix))
 
     if score > best_score:
         best_score = score
@@ -58,5 +60,6 @@ print("Лучшая комбинация матриц:")
 for row in best_combination:
     print(row)
 print("Произведение элементов на главной диагонали + Сумма в правом верхнем квадранте:", best_score)
+
 
 
