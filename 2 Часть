@@ -3,6 +3,7 @@
 
 
 import numpy as np
+
 matrix = [
     [1, 2],
     [3, 4]
@@ -26,9 +27,14 @@ for i in range(4):
             l = 6 - i - j - k
             combinations.append([sub_matrices[i], sub_matrices[j], sub_matrices[k], sub_matrices[l]])
 
+
 def objective_function(matrix):
     diagonal_elements = [matrix[i][i] for i in range(len(matrix))]
     return np.prod(diagonal_elements)
+
+
+def upper_right_sum(matrix):
+    return np.sum(matrix[0][n:])  # Сумма элементов в правом верхнем квадранте
 
 
 best_combination = None
@@ -42,7 +48,7 @@ for c in combinations:
         else:
             new_matrix.append(c[2][j - n] + c[3][j - n])
 
-    score = objective_function(new_matrix)
+    score = objective_function(new_matrix) + upper_right_sum(new_matrix)
 
     if score > best_score:
         best_score = score
@@ -51,5 +57,6 @@ for c in combinations:
 print("Лучшая комбинация матриц:")
 for row in best_combination:
     print(row)
-print("Произведение элементов на главной диагонали:", best_score)
+print("Произведение элементов на главной диагонали + Сумма в правом верхнем квадранте:", best_score)
+
 
