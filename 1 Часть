@@ -1,37 +1,82 @@
-#Дана квадратная матрица, состоящая из четырех равных по размерам подматриц. Сформировать все возможные варианты данной матрицы путем перестановки данных подматриц.
+import numpy as np
+def diagonal_product(matrix):
+    n = matrix.shape[0]
+    product = 1
+    for i in range(n):
+        product *= matrix[i, i]
+    return product
+def input_matrix(size):
+    matrix = np.zeros((size * 2, size * 2), dtype=int)
+    print(f"Введите значения для подматрицы размером {size}x{size}:")
+    for i in range(size):
+        for j in range(size):
+            matrix[i, j] = int(input(f"Значение в строке {i + 1}, столбце {j + 1}: "))
 
-matrix = [
-    [1, 2],
-    [3, 4]
-]
+    return matrix
+def generate_random_matrix(size):
+    matrix = np.zeros((size * 2, size * 2), dtype=int)
+    for i in range(size * 2):
+        for j in range(size * 2):
+            matrix[i, j] = np.random.randint(1, 10)  # Можно изменить диапазон случайных чисел по вашему усмотрению
+    return matrix
 
-sub_matrices = []
-n = len(matrix) // 2
 
-for i in range(2):
-    for j in range(2):
-        sub_matrices.append([row[j*n:(j+1)*n] for row in matrix[i*n:(i+1)*n]])
+def find_best_matrix(original_matrix):
+    n = original_matrix.shape[0]
+    max_product = 0
+    best_matrix = None
 
-combinations = []
-for i in range(4):
-    for j in range(4):
-        if j == i:
-            continue
-        for k in range(4):
-            if k == i or k == j:
-                continue
-            l = 6 - i - j - k
-            combinations.append([sub_matrices[i], sub_matrices[j], sub_matrices[k], sub_matrices[l]])
+    for perm_top in ['AB', 'BA']:
+        for perm_bottom in ['CD', 'DC']:
+            perm_matrix = np.copy(original_matrix)
+            if perm_top == 'AB':
+                perm_matrix[:n // 2, :n // 2] = original_matrix[:n // 2, :n // 2]
+                perm_matrix[:n // 2, n // 2:] = original_matrix[:n // 2, n // 2:]
+            else:
+                perm_matrix[:n // 2, :n // 2] = original_matrix[:n // 2, n // 2:]
+                perm_matrix[:n // 2, n // 2:] = original_matrix[:n // 2, :n // 2]
 
-for i, c in enumerate(combinations):
-    new_matrix = []
-    for j in range(n*2):
-        if j < n:
-            new_matrix.append(c[0][j] + c[1][j])
+            if perm_bottom == 'CD':
+                perm_matrix[n // 2:, n // 2:] = original_matrix[n // 2:, n // 2:]
+            else:
+                perm_matrix[n // 2:, n // 2:] = original_matrix[n // 2:, :n // 2]
+                perm_matrix[n // 2:, :n // 2] = original_matrix[n // 2:, n // 2:]
+
+            prod = diagonal_product(perm_matrix)
+
+            if prod > max_product:
+                max_product = prod
+                best_matrix = perm_matrix
+
+    return best_matrix
+
+size = int(input("Введите размер подматрицы: "))
+original_matrix = generate_random_matrix(size)
+best_matrix = find_best_matrix(original_matrix)
+
+print("Изначальная матрицa:")
+print(original_matrix)
+
+print("\nВарианты перестановок:")
+for perm_top in ['AB', 'BA']:
+    for perm_bottom in ['CD', 'DC']:
+        perm_matrix = np.copy(original_matrix)
+        if perm_top == 'AB':
+            perm_matrix[:size, :size] = original_matrix[:size, :size]
+            perm_matrix[:size, size:] = original_matrix[:size, size:]
         else:
-            new_matrix.append(c[2][j-n] + c[3][j-n])
-    print(f"Матрица №{i+1}:")
-    for row in new_matrix:
-        print(row)
-    print()
+            perm_matrix[:size, :size] = original_matrix[:size, size:]
+            perm_matrix[:size, size:] = original_matrix[:size, :size]
 
+        if perm_bottom == 'CD':
+            perm_matrix[size:, size:] = original_matrix[size:, size:]
+        else:
+            perm_matrix[size:, size:] = original_matrix[size:, :size]
+            perm_matrix[size:, :size] = original_matrix[size:, size:]
+
+        print(perm_matrix)
+
+print("\nЛучшая матрицa:")
+print(best_matrix)
+diagonal_prod = diagonal_product(best_matrix)
+print(f"Результат произведения на главной диагонали лучшей матрицы: {diagonal_prod}")
